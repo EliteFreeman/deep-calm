@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3 uid="uid://6dq51h4g5ydj"]
+
+[ext_resource type="Script" uid="uid://ctbt8o4umi565" path="res://monk.gd" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://fb6syrquwvcj" path="res://main.gd" id="1_h2yge"]
+[ext_resource type="Texture2D" uid="uid://6be7wubl7in2" path="res://icon.svg" id="1_ig7tw"]
+[ext_resource type="Texture2D" uid="uid://ckke57kagi6i4" path="res://temporary_textures/pngtree-the-sky-is-orange-in-the-afternoon-png-image_6547216.png" id="2_1bvp3"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_h2yge"]
+blend_mode = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
+size = Vector2(128, 128)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_h2yge")
+swipe_ap_cost = 20.0
+
+[node name="Water" type="ColorRect" parent="."]
+material = SubResource("CanvasItemMaterial_h2yge")
+use_parent_material = true
+offset_left = -20.0
+offset_top = 31.0
+offset_right = 729.0
+offset_bottom = 1303.0
+color = Color(0.23760001, 0.47951993, 0.54, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(354.49997, 147)
+scale = Vector2(1.3796295, 0.8555556)
+texture = ExtResource("2_1bvp3")
+
+[node name="Monk" type="CharacterBody2D" parent="." groups=["player"]]
+position = Vector2(369, 259)
+collision_mask = 0
+script = ExtResource("1_0xm2m")
+max_ap = 250.0
+ap_regen_rate = 20.0
+ap_drag_drain_rate = 16.0
+sink_curve_power = 1.1
+
+[node name="Sprite2D" type="Sprite2D" parent="Monk"]
+texture = ExtResource("1_ig7tw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Monk"]
+shape = SubResource("RectangleShape2D_0xm2m")
+
+[node name="HazardSpawner" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[connection signal="timeout" from="HazardSpawner" to="." method="_on_hazard_spawner_timeout"]
