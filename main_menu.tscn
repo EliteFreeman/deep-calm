@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3 uid="uid://dkoq11r3kvsf0"]
+
+[ext_resource type="Script" uid="uid://ct1ore05lg3kb" path="res://main_menu.gd" id="1_06t4h"]
+[ext_resource type="Texture2D" uid="uid://biie0wvdk07gf" path="res://temporary_textures/index-media-cover-art-play-button-overlay-5.png" id="2_7vrkn"]
+[ext_resource type="Texture2D" uid="uid://bi3n7xrwn44g1" path="res://temporary_textures/download (1).jpeg" id="3_fu7sn"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_06t4h")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(362.00003, 336.5)
+scale = Vector2(0.9427083, 0.92578125)
+texture = ExtResource("3_fu7sn")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_top = 534.0
+offset_right = 721.0
+offset_bottom = 1281.0
+color = Color(0.14117648, 0.15294118, 0.17254902, 1)
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 192.0
+offset_top = 683.0
+offset_right = 552.0
+offset_bottom = 1043.0
+icon = ExtResource("2_7vrkn")
+flat = true
+
+[node name="TimeLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 230.0
+offset_top = 1050.0
+offset_right = 316.0
+offset_bottom = 1095.0
+pivot_offset = Vector2(20, 20)
+theme_override_font_sizes/font_size = 30
+
+[node name="HazardsLabel" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 230.0
+offset_top = 1100.0
+offset_right = 316.0
+offset_bottom = 1145.0
+pivot_offset = Vector2(20, 20)
+theme_override_font_sizes/font_size = 30
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

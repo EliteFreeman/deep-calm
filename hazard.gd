@@ -27,6 +27,13 @@ func _ready():
 	rotation_speed = randf_range(-180.0, 180.0)
 
 func _on_screen_exited():
+	# Only count as "avoided" if the hazard has not already hit the player.
+	if not has_been_hit:
+		ScoreManager.hazards_avoided += 1
+	
+	# The queue_free() is now redundant because this function is only
+	# called by the VisibleOnScreenNotifier2D right before it should be deleted.
+	# However, keeping it is safe.
 	queue_free()
 
 # This is the NEW function connected to the RigidBody2D's signal.
@@ -45,21 +52,23 @@ func _on_body_entered(body):
 		disintegrate()
 
 func disintegrate():
-	# 1. Disable collision so it can't interact with anything else.
-	$CollisionShape2D.disabled = true
-	
-	# 2. Stop its movement.
+	# 1. Stop its movement.
 	linear_velocity = Vector2.ZERO
+	
+	# 2. Call our new function DEFERRED to safely disable collision.
+	call_deferred("disable_collision")
 	
 	# 3. Create a Tween to handle the fade-out animation.
 	var tween = create_tween()
-	# Animate the 'modulate' property of the sprite. We specifically target the
-	# 'a' (alpha/transparency) channel, fading it from 1 (visible) to 0 (invisible).
 	tween.tween_property($Sprite2D, "modulate:a", 0.0, 0.5)
 	
 	# 4. Once the tween animation is finished, delete the hazard.
 	await tween.finished
 	queue_free()
+
+# This is our new helper function that will be called at a safe time.
+func disable_collision():
+	$CollisionShape2D.disabled = true
 
 func _physics_process(delta: float):
 	# First, check if we have a valid target. If not, do nothing.

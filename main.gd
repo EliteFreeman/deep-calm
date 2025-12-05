@@ -6,6 +6,8 @@ extends Node2D
 @export var swipe_ap_cost: float = 40.0
 @export var swipe_push_force: float = 500.0
 @export var swipe_radius: float = 150.0
+@onready var swipe_trail = $SwipeTrail
+var is_swipe_active: bool = false
 
 const HAZARD_SCENE = preload("res://hazard.tscn")
 
@@ -17,13 +19,18 @@ func _input(event: InputEvent):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			swipe_start_position = event.position # Record start position for swipe direction
-			if is_mouse_over_monk(event.position):
+			if is_mouse_over_monk(event.position) and monk.is_grabbable():
 				is_monk_drag = true
 				monk.start_drag()
 			else:
 				is_monk_drag = false
+				is_swipe_active = true
+				swipe_trail.clear_points()
 				monk.drain_ap_on_swipe(swipe_ap_cost)
 		else: # On mouse release
+			if is_swipe_active:
+				fade_out_trail()
+			is_swipe_active = false
 			# Was this a swipe? (Not a monk drag and not a simple click)
 			if not is_monk_drag and event.position.distance_to(swipe_start_position) > 10:
 				apply_swipe_push(swipe_start_position, event.position)
@@ -34,7 +41,9 @@ func _input(event: InputEvent):
 			
 			# Reset the drag flag regardless.
 			is_monk_drag = false
-			
+	elif event is InputEventMouseMotion and is_swipe_active:
+		swipe_trail.add_point(event.position)
+
 func apply_swipe_push(start_pos, end_pos):
 	var swipe_vector = end_pos - start_pos
 	var swipe_direction = swipe_vector.normalized()
@@ -89,6 +98,8 @@ func _on_hazard_spawner_timeout():
 	var spawn_position = Vector2.ZERO
 	var travel_direction = Vector2.ZERO
 	
+	
+	
 	match spawn_edge:
 		0: # Spawn on the Right edge
 			spawn_position.x = screen_size.x + 50
@@ -113,3 +124,26 @@ func _on_hazard_spawner_timeout():
 	
 	# Add the hazard to the game.
 	add_child(new_hazard)
+
+func _on_monk_drag_exhausted():
+	is_monk_drag = false
+
+func _ready():
+	# Tell the Monk where the UI is.
+	monk.ui = $UI
+
+func fade_out_trail():
+	# Create a new tween to handle the fade animation.
+	var tween = create_tween()
+	# We will animate the "width" of the line, shrinking it from its current
+	# width down to 0 over 0.3 seconds. This gives a nice sharp "slash" feel.
+	tween.tween_property(swipe_trail, "width", 0.0, 0.3)
+	
+	# After the tween is finished, we clear the points so it's ready for the next swipe.
+	await tween.finished
+	swipe_trail.clear_points()
+	# Reset the width back to its default value for the next swipe.
+	swipe_trail.width = 15.0
+
+func _process(delta: float): # Using _process is fine for non-physics timers
+	ScoreManager.time_survived += delta

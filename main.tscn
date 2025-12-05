@@ -1,15 +1,26 @@
-[gd_scene load_steps=7 format=3 uid="uid://6dq51h4g5ydj"]
+[gd_scene load_steps=12 format=3 uid="uid://6dq51h4g5ydj"]
 
 [ext_resource type="Script" uid="uid://ctbt8o4umi565" path="res://monk.gd" id="1_0xm2m"]
 [ext_resource type="Script" uid="uid://fb6syrquwvcj" path="res://main.gd" id="1_h2yge"]
 [ext_resource type="Texture2D" uid="uid://6be7wubl7in2" path="res://icon.svg" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://ckke57kagi6i4" path="res://temporary_textures/pngtree-the-sky-is-orange-in-the-afternoon-png-image_6547216.png" id="2_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://lyaopyqpm4ab" path="res://monk_ragdoll.tscn" id="4_lquwl"]
+[ext_resource type="Script" uid="uid://mfkmlfjf7fxh" path="res://ui.gd" id="5_lquwl"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_h2yge"]
 blend_mode = 1
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
-size = Vector2(128, 128)
+size = Vector2(56, 126)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1bvp3"]
+bg_color = Color(0.6531069, 0.00078905554, 0.7379534, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lquwl"]
+bg_color = Color(0.1408366, 0.5971488, 0.27807602, 1)
+
+[sub_resource type="Gradient" id="Gradient_lquwl"]
+colors = PackedColorArray(0.60333335, 0.3, 1, 0, 0.60333335, 0.3, 1, 1)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_h2yge")
@@ -19,14 +30,14 @@ swipe_ap_cost = 20.0
 material = SubResource("CanvasItemMaterial_h2yge")
 use_parent_material = true
 offset_left = -20.0
-offset_top = 31.0
+offset_top = 160.0
 offset_right = 729.0
 offset_bottom = 1303.0
 color = Color(0.23760001, 0.47951993, 0.54, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(354.49997, 147)
-scale = Vector2(1.3796295, 0.8555556)
+position = Vector2(354.49997, 216)
+scale = Vector2(1.3796295, 1.238889)
 texture = ExtResource("2_1bvp3")
 
 [node name="Monk" type="CharacterBody2D" parent="." groups=["player"]]
@@ -34,18 +45,73 @@ position = Vector2(369, 259)
 collision_mask = 0
 script = ExtResource("1_0xm2m")
 max_ap = 250.0
-ap_regen_rate = 20.0
+ap_regen_rate = 24.0
 ap_drag_drain_rate = 16.0
 sink_curve_power = 1.1
-
-[node name="Sprite2D" type="Sprite2D" parent="Monk"]
-texture = ExtResource("1_ig7tw")
+drag_lockout_threshold = 30.0
+drag_recovery_threshold = 70.0
+breath_loss_rate = 5.0
+breath_regen_rate = 10.0
+breath_line_y = 520.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Monk"]
+position = Vector2(0, 8)
 shape = SubResource("RectangleShape2D_0xm2m")
+
+[node name="Sprite2D" type="Sprite2D" parent="Monk"]
+visible = false
+texture = ExtResource("1_ig7tw")
+
+[node name="MonkRagdoll" parent="Monk" instance=ExtResource("4_lquwl")]
+position = Vector2(-20, -44)
+disable_mode = 1
+gravity_scale = 0.0
 
 [node name="HazardSpawner" type="Timer" parent="."]
 wait_time = 2.0
 autostart = true
 
+[node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("5_lquwl")
+
+[node name="AP_bar" type="ProgressBar" parent="UI"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 340.0
+offset_bottom = 55.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_1bvp3")
+
+[node name="Breath_bar" type="ProgressBar" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -350.0
+offset_top = 20.0
+offset_right = -30.000305
+offset_bottom = 55.0
+grow_horizontal = 0
+theme_override_styles/fill = SubResource("StyleBoxFlat_lquwl")
+
+[node name="DebugLabel" type="Label" parent="UI"]
+anchors_preset = -1
+anchor_left = 0.004
+anchor_top = 0.864
+anchor_right = 0.44300002
+anchor_bottom = 1.0040001
+offset_left = 0.119999886
+offset_top = 0.079956055
+offset_right = 0.039978027
+offset_bottom = -0.12011719
+theme_override_font_sizes/font_size = 20
+
+[node name="SwipeTrail" type="Line2D" parent="."]
+width = 15.0
+default_color = Color(0.60813737, 0.30339593, 1, 1)
+gradient = SubResource("Gradient_lquwl")
+joint_mode = 2
+end_cap_mode = 2
+
+[connection signal="ap_changed" from="Monk" to="UI" method="update_ap_bar"]
+[connection signal="breath_changed" from="Monk" to="UI" method="update_breath_bar"]
+[connection signal="drag_exhausted" from="Monk" to="." method="_on_monk_drag_exhausted"]
 [connection signal="timeout" from="HazardSpawner" to="." method="_on_hazard_spawner_timeout"]
