@@ -3,6 +3,14 @@ signal ap_changed(current_ap, max_ap)
 signal breath_changed(current_breath, max_breath)
 signal drag_exhausted
 
+
+var screen_bounds_min: Vector2
+var screen_bounds_max: Vector2
+
+@export_group("Movement")
+## The margin from the screen edge the monk cannot cross.
+@export var screen_margin: float = 20.0
+
 # --- Stiffness / Floppiness ---
 ## Softness of joints when composed (0 is perfectly stiff).
 @export var stiff_joint_softness: float = 0.0
@@ -60,6 +68,10 @@ func _ready():
 	global_position.y = resting_y_position
 	target_y_position = resting_y_position
 	
+	# --- NEW CODE TO GET SCREEN BOUNDS ---
+	var screen_rect = get_viewport_rect()
+	screen_bounds_min = screen_rect.position + Vector2(screen_margin, screen_margin)
+	screen_bounds_max = screen_rect.end - Vector2(screen_margin, screen_margin)
 
 func _physics_process(delta: float):
 	# --- BLOCK 1: AURA POWER (AP) & MOVEMENT LOGIC ---
@@ -75,6 +87,11 @@ func _physics_process(delta: float):
 			ragdoll_torso.global_position = get_global_mouse_position()
 			# Keep the "ghost" position in sync with the puppet.
 			self.global_position = ragdoll_torso.global_position
+			
+			self.global_position.x = clamp(self.global_position.x, screen_bounds_min.x, screen_bounds_max.x)
+			self.global_position.y = clamp(self.global_position.y, screen_bounds_min.y, screen_bounds_max.y)
+			ragdoll_torso.global_position = self.global_position
+			
 			# Drain AP as the cost of this frame's drag.
 			self.current_ap -= ap_drag_drain_rate * delta
 	else:

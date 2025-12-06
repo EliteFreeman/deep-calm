@@ -412,7 +412,7 @@ scale = Vector2(1.0714285, 0.6628572)
 sprite_frames = SubResource("SpriteFrames_e71vb")
 animation = &"underwater_animation"
 autoplay = "underwater_animation"
-frame_progress = 0.14526108
+frame_progress = 0.26183236
 
 [node name="Water" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_272bh")
@@ -427,6 +427,7 @@ texture = SubResource("GradientTexture2D_5vw27")
 position = Vector2(374, 352)
 collision_mask = 0
 script = ExtResource("1_0xm2m")
+stiff_joint_softness = 0.8
 max_ap = 250.0
 ap_regen_rate = 24.0
 ap_drag_drain_rate = 16.0
