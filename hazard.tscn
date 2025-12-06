@@ -1,10 +1,10 @@
 [gd_scene load_steps=4 format=3 uid="uid://dyuen5tyvt42w"]
 
 [ext_resource type="Script" uid="uid://crm43rbc3yp74" path="res://hazard.gd" id="1_scxj1"]
-[ext_resource type="Texture2D" uid="uid://rs5nyi45myqq" path="res://temporary_textures/garbage.png" id="2_scxj1"]
+[ext_resource type="Texture2D" uid="uid://bixsmgexh4gx6" path="res://temporary_textures/can_crushed.png" id="2_scxj1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_scxj1"]
-size = Vector2(48, 48)
+size = Vector2(48, 30)
 
 [node name="Hazard" type="RigidBody2D"]
 collision_layer = 2
@@ -16,9 +16,8 @@ homing_strength = 1.2
 detection_radius = 450.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(1, 0, 0, 1)
-position = Vector2(-1.9073486e-06, 2.000003)
-scale = Vector2(0.08, 0.09)
+position = Vector2(-2.1457672e-06, -2.861023e-06)
+scale = Vector2(0.059999995, 0.059999995)
 texture = ExtResource("2_scxj1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

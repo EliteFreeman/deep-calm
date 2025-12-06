@@ -27,10 +27,11 @@ color = Color(0.14117648, 0.15294118, 0.17254902, 1)
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 0
-offset_left = 192.0
-offset_top = 683.0
-offset_right = 552.0
-offset_bottom = 1043.0
+offset_left = 265.257
+offset_top = 711.195
+offset_right = 625.25775
+offset_bottom = 1071.1952
+scale = Vector2(0.55, 0.55)
 icon = ExtResource("2_7vrkn")
 flat = true
 
